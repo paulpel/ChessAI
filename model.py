@@ -1,10 +1,11 @@
+import numpy as np
 import tensorflow as tf
-from tensorflow.keras.models import Model
 from sklearn.model_selection import train_test_split
 from tensorflow.keras import layers
-from LichessAPI import get_games, get_games_as_a_set
+
+from LichessAPI import get_games
+from LichessAPI import get_games_as_a_set
 from tensor import ChessTensor
-import numpy as np
 
 
 def create_chess_cnn():
@@ -59,4 +60,3 @@ if __name__ == "__main__":
     history = chess_cnn.fit(X_train, y_train, epochs=10, batch_size=32, validation_data=(X_val, y_val))
     model_path = "my_chess_model.h5"  # Change the path as needed
     chess_cnn.save(model_path)
-

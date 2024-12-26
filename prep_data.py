@@ -1,7 +1,8 @@
-import requests
-import chess
+from collections.abc import Iterable
+
 import chess.pgn
 import numpy as np
+import requests
 
 def download_games(player_id, max_games=100, filename='games.pgn'):
     url = f"https://lichess.org/api/games/user/{player_id}"
@@ -40,7 +41,7 @@ def extract_data_for_training(filename):
     return white_data, black_data
 
 
-def transform_data(data, N):
+def transform_data(data: Iterable, N):
     X_board, X_history, y = [], [], []
     for fen, history, move in data:
         board_matrix = fen_to_matrix(fen)
@@ -58,7 +59,7 @@ def transform_data(data, N):
 
 
 
-def fen_to_matrix(fen):
+def fen_to_matrix(fen: str):
     # Define a mapping from piece symbols to numbers
     piece_to_num = {'r': -5, 'n': -4, 'b': -3, 'q': -2, 'k': -1, 'p': -6,
                     'R': 5, 'N': 4, 'B': 3, 'Q': 2, 'K': 1, 'P': 6, '.': 0}

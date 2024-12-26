@@ -1,11 +1,13 @@
-import chess.pgn
-import random
 import io
-import numpy as np
-import torch
+import random
+from collections.abc import Iterable
+from collections.abc import Sequence
+from typing import Never
+
+import chess.pgn
 import requests
 
-def get_random_games_from_player(username, num_games=100):
+def get_random_games_from_player(username, num_games: int=100):
     url = f"https://lichess.org/api/games/user/{username}"
     params = {"max": num_games, "perfType": "blitz", "pgnInJson": False}
     response = requests.get(url, params=params)
@@ -46,7 +48,7 @@ def extract_all_fens_from_pgn(pgn_text):
     return game_positions
 
 
-def get_games(username, num_games=100):
+def get_games(username, num_games: int=100):
     """Get random positions from a user's games"""
     games = get_random_games_from_player(username, num_games)
     all_games = []
@@ -75,7 +77,7 @@ def generate_possible_fens_positions(fen):
     return fen_positions
 
 
-def create_stacked_set_from_game(game, color, stack_size=2, add_other_legal_moves=True):
+def create_stacked_set_from_game(game: Sequence, color, stack_size=2, add_other_legal_moves=True):
     """
     Create a list of stacked board representations from a game's FEN strings.
 
@@ -150,7 +152,7 @@ def create_stacked_set_from_game(game, color, stack_size=2, add_other_legal_move
     return stacked_sets
 
 
-def get_games_as_a_set(games, colors, previous_moves=3, add_other_legal_moves=True):
+def get_games_as_a_set(games: Iterable, colors: Sequence, previous_moves=3, add_other_legal_moves=True):
     """
     Returns list of a processed games - tensors of size 8x8x(14 times stack_size). It represents the board state (8x8).
     14 is the number of channel (2 are for pawns, 2 for rooks..., 1 for castling and 1 for en passant). The list is as follows:

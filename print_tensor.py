@@ -1,10 +1,11 @@
+from collections.abc import Sequence
 # Assume the tensor shape is (110, 8, 8) where:
 # - 104 layers are for 8 plies of board states (13 layers each)
 # - 4 layers for castling rights
 # - 1 layer for who's turn it is
 # - 1 layer for the 50-move rule
 
-def describe_and_print_tensor(tensor):
+def describe_and_print_tensor(tensor: Sequence):
     piece_symbols = 'PRNBQKprnbqk'  # Order of pieces in the tensor layers
     descriptions = []
     

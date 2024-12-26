@@ -1,7 +1,11 @@
-#!/usr/bin/env python3
 import sys
+from collections.abc import Sequence
+from typing import Any
+
 import numpy as np
+
 from .policy_index import policy_index
+#!/usr/bin/env python3
 
 columns = 'abcdefgh'
 rows = '12345678'
@@ -10,20 +14,20 @@ promotions = 'rbq' # N is encoded as normal move
 col_index = {columns[i] : i for i in range(len(columns))}
 row_index = {rows[i] : i for i in range(len(rows))}
 
-def index_to_position(x):
+def index_to_position(x: Sequence):
     return columns[x[0]] + rows[x[1]]
 
-def position_to_index(p):
+def position_to_index(p: Sequence):
     return col_index[p[0]], row_index[p[1]]
 
-def valid_index(i):
+def valid_index(i: Sequence):
     if i[0] > 7 or i[0] < 0:
         return False
     if i[1] > 7 or i[1] < 0:
         return False
     return True
 
-def queen_move(start, direction, steps):
+def queen_move(start: Sequence[Any], direction, steps):
     i = position_to_index(start)
     dir_vectors = {'N': (0, 1), 'NE': (1, 1), 'E': (1, 0), 'SE': (1, -1),
             'S':(0, -1), 'SW':(-1, -1), 'W': (-1, 0), 'NW': (-1, 1)}
@@ -33,7 +37,7 @@ def queen_move(start, direction, steps):
         return None
     return index_to_position(i)
 
-def knight_move(start, direction, steps):
+def knight_move(start: Sequence[Any], direction, steps):
     i = position_to_index(start)
     dir_vectors = {'N': (1, 2), 'NE': (2, 1), 'E': (2, -1), 'SE': (1, -2),
             'S':(-1, -2), 'SW':(-2, -1), 'W': (-2, 1), 'NW': (-1, 2)}

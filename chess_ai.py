@@ -1,12 +1,20 @@
-import pygame
-import chess
 import os
 import time
-from tensor import generate_full_input_tensor
+from collections.abc import Iterable
+from collections.abc import Sequence
+from typing import Never
+
+import chess
 import numpy as np
-from maia_model_test import load_model
-from print_tensor import describe_and_print_tensor
+import pygame
+
 from maia.tf2.policy_index import policy_index
+from maia_model_test import load_model
+from protocols.protocols import Board
+from protocols.protocols import Font
+from protocols.protocols import Model
+from protocols.protocols import Screen
+from tensor import generate_full_input_tensor
 
 # Initialize Pygame
 pygame.init()
@@ -104,7 +112,7 @@ def draw_board(screen):
 
 
 # Draw the pieces on the board, skipping the dragged piece
-def draw_pieces(screen, images, board):
+def draw_pieces(screen: Screen, images: Sequence, board: Board):
     for square in chess.SQUARES:
         piece = board.piece_at(square)
         if piece:
@@ -128,7 +136,7 @@ def draw_pieces(screen, images, board):
             )
 
 
-def get_captured_pieces(board):
+def get_captured_pieces(board: Board):
     # Define the initial set of pieces for each player
     initial_pieces = {
         "w": [
@@ -183,7 +191,7 @@ def get_captured_pieces(board):
     return captured_pieces
 
 
-def draw_panel(screen, board, images, player_times, turn):
+def draw_panel(screen: Screen, board: Board, images: Sequence[str], player_times, turn):
     # Draw a background for the panel
     panel_bg = pygame.Rect(BOARD_SIZE + OFFSET * 2, 0 + OFFSET, PANEL_WIDTH, BOARD_SIZE)
     pygame.draw.rect(screen, LIGHT_SQUARE, panel_bg)
@@ -197,7 +205,7 @@ def draw_panel(screen, board, images, player_times, turn):
     captured_pieces = get_captured_pieces(board)
 
     # Display captured pieces in a grid for each player
-    def draw_captured_pieces(y_offset, pieces, color):
+    def draw_captured_pieces(y_offset, pieces: Iterable, color):
         for i, piece in enumerate(pieces):
             row = i // PIECES_PER_ROW
             col = i % PIECES_PER_ROW
@@ -215,7 +223,7 @@ def draw_panel(screen, board, images, player_times, turn):
     )  # Adjust y_offset as needed
 
 
-def generate_possible_fens(board):
+def generate_possible_fens(board: Board):
     possible_fens = []
     for move in board.legal_moves:
         board_copy = board.copy(stack=False)
@@ -224,7 +232,7 @@ def generate_possible_fens(board):
     return possible_fens
 
 
-def generate_possible_boards_with_moves(board):
+def generate_possible_boards_with_moves(board: Board):
     possible_boards = []
     moves = []
     for move in board.legal_moves:
@@ -235,7 +243,7 @@ def generate_possible_boards_with_moves(board):
     return possible_boards, moves
 
 
-def choose_best_move(model, model_inputs):
+def choose_best_move(model: Model, model_inputs):
     predictions = model.predict(model_inputs)
     best_move_index = np.argmax(predictions)  # Choose the move with the highest score
     return best_move_index
@@ -246,7 +254,7 @@ def generate_move_with_promotion(from_square, to_square, promotion_piece):
     return chess.Move(from_square, to_square, promotion=promotion_piece)
 
 
-def show_promotion_gui(screen, color):
+def show_promotion_gui(screen: Screen, color):
     panel_width, panel_height = 280, 80  # Increased size for better visibility
     panel_x = (BOARD_SIZE - panel_width) // 2
     panel_y = (BOARD_SIZE - panel_height) // 2
@@ -279,14 +287,14 @@ def show_promotion_gui(screen, color):
     return option_positions  # Return positions to enable click detection
 
 
-def get_promotion_choice(option_positions, mouse_x, mouse_y):
+def get_promotion_choice(option_positions: Iterable, mouse_x, mouse_y):
     for i, (x, y, width, height) in enumerate(option_positions):
         if x <= mouse_x <= x + width and y <= mouse_y <= y + height:
             return [chess.QUEEN, chess.ROOK, chess.BISHOP, chess.KNIGHT][i]
     return None
 
 
-def check_game_state(board):
+def check_game_state(board: Board):
     if board.is_checkmate():
         return "checkmate"
     elif (
@@ -325,7 +333,7 @@ def load_background():
     return background_image
 
 
-def draw_text_with_shadow(screen, text, font, color, shadow_color, position):
+def draw_text_with_shadow(screen: Screen, text, font: Font, color, shadow_color, position):
     text_surface = font.render(text, True, color)
     shadow_surface = font.render(text, True, shadow_color)
     x, y = position
@@ -339,7 +347,7 @@ def draw_text_with_shadow(screen, text, font, color, shadow_color, position):
 
 
 
-def show_menu(screen, font, background_image):
+def show_menu(screen: Screen, font: Font, background_image):
     menu_items = ['Play', 'Options', 'Quit']
     selected_index = 0
 
@@ -383,7 +391,7 @@ def show_menu(screen, font, background_image):
     return 'Quit'
 
 
-def show_options(screen, font, background_image):
+def show_options(screen: Screen, font: Font, background_image):
     global play_mode, player_color
     options_menu = ["Play Mode: " + play_mode, "Player Color: " + player_color, "Back"]
     selected_index = 0
@@ -434,7 +442,7 @@ def show_options(screen, font, background_image):
         pygame.time.wait(100)
 
 
-def make_move(board, move):
+def make_move(board: Board, move):
     board.push(move)
     tensor = generate_full_input_tensor(board, ai_board_history[-7:])
     ai_board_history.append(board.copy())

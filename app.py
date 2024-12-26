@@ -1,7 +1,13 @@
 import copy
 import random
-import pygame
 import time
+from collections.abc import Iterable
+from collections.abc import Sequence
+
+import pygame
+
+from protocols.protocols import CharSequence
+from protocols.protocols import Win
 
 
 # Constants
@@ -94,7 +100,7 @@ class Chess:
         color = LIGHT_SQUARE if (row + col) % 2 == 0 else DARK_SQUARE
         pygame.draw.rect(win, color, rect)
 
-    def draw_board(self, win, board):
+    def draw_board(self, win: Win, board: Sequence[Sequence]):
         """Draw the chessboard and pieces."""
         for row in range(ROWS):
             for col in range(COLS):
@@ -148,7 +154,7 @@ class Chess:
             "p": pawn_img_w,
         }
 
-    def read_position_from_fen(self, fen_string):
+    def read_position_from_fen(self, fen_string: Sequence[str]):
         current_row = 0
         current_col = 0
         i = 0
@@ -202,7 +208,7 @@ class Chess:
             self.board[row_start][col_start],
         )
 
-    def move(self, move, upgrade=False):
+    def move(self, move: Sequence, upgrade=False):
         from_row, to_row = move[0], move[2]
         from_col, to_col = move[1], move[3]
         fig = self.board[from_row][from_col]
@@ -221,7 +227,7 @@ class Chess:
 
         self.white_turn = not self.white_turn  # update turn
 
-    def check_input(self, inp, start=True):
+    def check_input(self, inp: Sequence, start=True):
         """Check if provided input is valid
 
         :param inp: input (row, col) cords
@@ -303,7 +309,7 @@ class Chess:
 
         return all_moves
 
-    def generate_pawn_moves(self, row, col, fig):
+    def generate_pawn_moves(self, row, col, fig: str):
         """Generate pawn moves
 
         :param row: row of figure to generate moves for
@@ -372,7 +378,7 @@ class Chess:
                 )
         return moves
 
-    def generate_rook_moves(self, row, col, fig):
+    def generate_rook_moves(self, row, col, fig: str):
         """Generate rook moves
 
         :param row: row of figure to generate moves for
@@ -416,7 +422,7 @@ class Chess:
 
         return moves
 
-    def generate_knight_moves(self, row, col, fig):
+    def generate_knight_moves(self, row, col, fig: str):
         """Generate knight moves
 
         :param row: row of figure to generate moves for
@@ -457,7 +463,7 @@ class Chess:
 
         return moves
 
-    def generate_bishop_moves(self, row, col, fig):
+    def generate_bishop_moves(self, row, col, fig: str):
         """Generate bishop moves
 
         :param row: row of figure to generate moves for
@@ -501,7 +507,7 @@ class Chess:
 
         return moves
 
-    def generate_queen_moves(self, row, col, fig):
+    def generate_queen_moves(self, row, col, fig: str):
         """Generate queen moves
 
         :param row: row of figure to generate moves for
@@ -554,7 +560,7 @@ class Chess:
 
         return moves
 
-    def generate_king_moves(self, row, col, fig):
+    def generate_king_moves(self, row, col, fig: str):
         """Generate king moves
 
         :param row: row of figure to generate moves for
@@ -595,7 +601,7 @@ class Chess:
 
         return moves
 
-    def filter_illegal_moves(self, moves):
+    def filter_illegal_moves(self, moves: Iterable[Sequence]):
         """Filter moves to exlude illegal ones
 
         :param moves: list of moves (list of tuples)
@@ -611,7 +617,7 @@ class Chess:
                 filtered.append(move)
         return filtered
 
-    def is_king_attacked(self, board, fig):
+    def is_king_attacked(self, board: Sequence[Sequence[str]], fig: CharSequence):
         """Check if king is being attacked
 
         :param board: potential board state
@@ -834,7 +840,7 @@ class Chess:
 
         return moves
 
-    def check_castle(self, tiles_b, tiles_to_check, fig):
+    def check_castle(self, tiles_b: Iterable, tiles_to_check: Iterable, fig):
         is_valid = True
         tiles_between = [self.board[i][j] for i, j in tiles_b]
         if len(set(tiles_between)) == 1 and tiles_between[0] == ".":

@@ -1,15 +1,20 @@
-import numpy as np
+from collections.abc import Sequence
+
 import chess
+import numpy as np
+
+from protocols.protocols import Board
+from protocols.protocols import HistorySubscript
 
 class ChessTensor:
     def __init__(self):
         self.tensor = np.zeros((12, 8, 8), dtype=bool)  # 12 layers: one for each piece type and color
 
-    def piece_index(self, piece):
+    def piece_index(self, piece: str):
         piece_order = 'PRNBQKprnbqk'  # Order: White Pawn, Rook, Knight, Bishop, Queen, King, then Black
         return piece_order.index(piece)
 
-    def parse_fen(self, fen):
+    def parse_fen(self, fen: str):
         self.tensor.fill(0)  # Reset tensor before updating
         board, _, _, _, _, _ = fen.split(" ")
         rows = board.split("/")
@@ -26,7 +31,7 @@ class ChessTensor:
     def get_tensor(self):
         return self.tensor
 
-def generate_full_input_tensor(board, history):
+def generate_full_input_tensor(board: Board, history: Sequence[HistorySubscript]):
     # print(len(history))
     full_tensor = np.zeros((112, 8, 8), dtype=int)
 
@@ -58,4 +63,3 @@ def generate_full_input_tensor(board, history):
     full_tensor[111, :, :] = 1 # ???
 
     return full_tensor
-
