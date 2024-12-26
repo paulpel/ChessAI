@@ -1,16 +1,18 @@
+from collections.abc import Sequence
+
 import tensorflow as tf
+
 import maia.tf2.lc0_az_policy_map as lc0_az_policy_map
-import numpy as np
 
 
 class ApplySqueezeExcitation(tf.keras.layers.Layer):
     def __init__(self, **kwargs):
         super(ApplySqueezeExcitation, self).__init__(**kwargs)
     
-    def build(self, input_shape):
+    def build(self, input_shape: Sequence[Sequence]):
         self.reshape_size = input_shape[1][1]
 
-    def call(self, inputs):
+    def call(self, inputs: Sequence):
         x = inputs[0]
         excited = inputs[1]
         gammas, betas = tf.split(tf.reshape(excited, [-1, self.reshape_size, 1, 1]), 2, axis=1)
@@ -186,5 +188,3 @@ def load_model(path):
 # prediction = loaded_model.predict([model_data])
 
 # print(prediction)
-
-
